@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+
+    <title>Sistema de Chamados</title>
+
+    <style>
+
+        body{
+            font-family: Arial;
+            margin:40px;
+            background:#f4f4f4;
+        }
+
+        input, textarea{
+            width:100%;
+            padding:10px;
+            margin-top:10px;
+        }
+
+        button{
+            padding:10px 20px;
+            margin-top:10px;
+        }
+
+        .card{
+            background:white;
+            padding:15px;
+            margin-top:15px;
+            border-radius:8px;
+        }
+
+    </style>
+
+</head>
+<body>
+
+    <h1>Sistema Corporativo</h1>
+
+    <input type="text" id="nome" placeholder="Nome">
+
+    <input type="text" id="setor" placeholder="Setor">
+
+    <textarea id="solicitacao" placeholder="Solicitação"></textarea>
+
+    <button onclick="cadastrarChamado()">
+        Cadastrar
+    </button>
+
+    <hr>
+
+    <div id="lista"></div>
+
+<script>
+
+const API = "http://172.26.88.67:3000";
+async function carregarChamados(){
+
+    const resposta = await fetch(`${API}/chamados`);
+
+    const chamados = await resposta.json();
+
+    const lista = document.getElementById("lista");
+
+    lista.innerHTML = "";
+
+    chamados.forEach(chamado => {
+
+        lista.innerHTML += `
+            <div class="card">
+                <b>Nome:</b> ${chamado.nome}<br>
+                <b>Setor:</b> ${chamado.setor}<br>
+                <b>Solicitação:</b> ${chamado.solicitacao}
+            </div>
+        `;
+    });
+}
+
+async function cadastrarChamado(){
+
+    const nome = document.getElementById("nome").value;
+
+    const setor = document.getElementById("setor").value;
+
+    const solicitacao = document.getElementById("solicitacao").value;
+
+    await fetch(`${API}/chamados`, {
+
+        method:"POST",
+
+        headers:{
+            "Content-Type":"application/json"
+        },
+
+        body: JSON.stringify({
+            nome,
+            setor,
+            solicitacao
+        })
+    });
+
+    carregarChamados();
+
+}
+
+carregarChamados();
+
+setInterval(carregarChamados, 3000);
+
+</script>
+
+</body>
+</html>
